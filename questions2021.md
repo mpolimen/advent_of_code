@@ -2,19 +2,19 @@
 
 ### Days
 
-[Day 1](#day-1:-sonar-sweep)
+<a href="#day-1-sonar-sweep">Day 1</a>
 
-​	[Solution](#day-1-solution)
+​	<a href="#day-1-solution">Day 1 Solution</a>
 
-[Day 2](#day-2-dive!:)
+<a href="#day-2-dive">Day 2</a>
 
-​	[Solution](#day-2-solution)
+​	<a href="#day-2-solution">Day 2 Solution</a>
 
-[Day 3](#day-3: binary-diagnostic)
+<a href="#day-3-binary-diagnostic">Day 3</a>
 
-​	[Solution](#day-3-solution)
+​	<a href="#day-3-solution">Day 3 Solution</a>
 
-[Day 4](#day-4:-giant-squid)
+<a href="#day-4-giant-squid">Day 4</a>
 
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
