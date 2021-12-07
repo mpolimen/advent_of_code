@@ -1,17 +1,6 @@
-# <span style="text-align: center;
-  background: repeating-linear-gradient(
-    45deg,
-    #30a883,
-    #30a883 30px,
-    #ff0a0a 30px,
-    #ff0a0a 60px
-  );
-  background-clip: text;
-  color: transparent;
-  -webkit-background-clip: text;
-  animation: 40s linear 0s infinite move;">Advent of Code 2021</span>
+# <span style="text-align: center; background: repeating-linear-gradient(45deg,#30a883,#30a883 30px,#ff0a0a 30px,#ff0a0a 60px); background-clip: text; color: transparent; -webkit-background-clip: text;">Advent of Code 2021</span>
 
-<a href="#day-1-sonar-sweep">Day 1</a>
+<a href="#day-1-sonar-sweep">Day 1</a>	
 
 ​	<a href="#day-1-solution">Day 1 Solution</a>
 
