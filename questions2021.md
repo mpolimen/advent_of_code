@@ -25,6 +25,8 @@
 
 <a href="#day-4-giant-squid">Day 4</a>
 
+​		<a href="#day-4-solution">Day 4 Solution</a>
+
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
