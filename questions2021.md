@@ -16,6 +16,10 @@
 
 ​		<a href="#day-4-solution">Day 4 Solution</a>
 
+<a href="#day-5-hydrothermal-venture">Day 5</a>
+
+​		<a href="#day-5-solution">Day 5 Solution</a>
+
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -562,5 +566,134 @@ if __name__ == "__main__":
             print(line)
             boards[-1].append(line)
     print(last_score(boards, draws))
+```
+
+## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 5: Hydrothermal Venture</span>
+
+#### --- Part 1 ---
+
+You come across a field of [hydrothermal vents](https://en.wikipedia.org/wiki/Hydrothermal_vent) on the ocean floor! These vents constantly produce large, opaque clouds, so it would be best to avoid them if possible.
+
+They tend to form in *lines*; the submarine helpfully produces a list of nearby lines of vents (your puzzle input) for you to review. For example:
+
+```
+0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+```
+
+Each line of vents is given as a line segment in the format `x1,y1 -> x2,y2` where `x1`,`y1` are the coordinates of one end the line segment and `x2`,`y2` are the coordinates of the other end. These line segments include the points at both ends. In other words:
+
+- An entry like `1,1 -> 1,3` covers points `1,1`, `1,2`, and `1,3`.
+- An entry like `9,7 -> 7,7` covers points `9,7`, `8,7`, and `7,7`.
+
+For now, **only consider horizontal and vertical lines**: lines where either `x1 = x2` or `y1 = y2`.
+
+So, the horizontal and vertical lines from the above list would produce the following diagram:
+
+```
+.......1..
+..1....1..
+..1....1..
+.......1..
+.112111211
+..........
+..........
+..........
+..........
+222111....
+```
+
+In this diagram, the top left corner is `0,0` and the bottom right corner is `9,9`. Each position is shown as **the number of lines which cover that point** or `.` if no line covers that point. The top-left pair of `1`s, for example, comes from `2,2 -> 2,1`; the very bottom row is formed by the overlapping lines `0,9 -> 5,9` and `0,9 -> 2,9`.
+
+To avoid the most dangerous areas, you need to determine **the number of points where at least two lines overlap**. In the above example, this is anywhere in the diagram with a `2` or larger - a total of `5` points.
+
+Consider only horizontal and vertical lines. **At how many points do at least two lines overlap?**
+
+#### --- Part 2 ---
+
+Unfortunately, considering only horizontal and vertical lines doesn't give you the full picture; you need to also consider **diagonal lines**.
+
+Because of the limits of the hydrothermal vent mapping system, the lines in your list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees. In other words:
+
+- An entry like `1,1 -> 3,3` covers points `1,1`, `2,2`, and `3,3`.
+- An entry like `9,7 -> 7,9` covers points `9,7`, `8,8`, and `7,9`.
+
+Considering all lines from the above example would now produce the following diagram:
+
+```
+1.1....11.
+.111...2..
+..2.1.111.
+...1.2.2..
+.112313211
+...1.2....
+..1...1...
+.1.....1..
+1.......1.
+222111....
+```
+
+You still need to determine **the number of points where at least two lines overlap**. In the above example, this is still anywhere in the diagram with a `2` or larger - now a total of `12` points.
+
+Consider all of the lines. **At how many points do at least two lines overlap?**
+
+### <span style="color: #e14e41; text-shadow: 0 0 2px #e14e41, 0 0 5px #e14e41; font-weight: normal;">Day 5 Solution</span>
+
+```python
+def find_marks(vent):
+    start = (int(vent[0][0]), int(vent[0][1]))
+    end = (int(vent[1][0]), int(vent[1][1]))
+    if start[0] == end[0]:
+        min_y = min(start[1], end[1])
+        max_y = max(start[1], end[1])
+        return [(start[0], i) for i in range(min_y, max_y+1)]
+    elif start[1] == end[1]:
+        min_x = min(start[0], end[0])
+        max_x = max(start[0], end[0])
+        return [(i, start[1]) for i in range(min_x, max_x+1)]
+    x, y = start
+    res = []
+    while(True):
+        res.append((x, y))
+        x = x+1 if start[0] < end[0] else x-1
+        y = y+1 if start[1] < end[1] else y-1
+        if x == end[0]:
+            res.append((x, y))
+            break
+    return res
+
+def diag(v):
+    start = (int(v[0][0]), int(v[0][1]))
+    end = (int(v[1][0]), int(v[1][1]))
+    return abs(start[0]-end[0]) == abs(start[1]-end[1])
+
+def num_overlaps(vents, adv=False):
+    res = 0
+    marks = [[0 for _ in range(1000)] for _ in range(1000)]
+    for v in vents:
+        if (v[0][0] != v[1][0] and v[0][1] != v[1][1] and
+         (not adv or not diag(v))):
+            continue
+        for m in find_marks(v):
+            if marks[m[0]][m[1]] == 1: res += 1
+            marks[m[0]][m[1]] += 1
+    return res
+
+if __name__ == "__main__":
+    vents = []
+    while(True):
+        i = input()
+        if i == '': break
+        coords = i.split(" -> ")
+        vents.append((coords[0].split(","), coords[1].split(",")))
+    print(num_overlaps(vents, True))
 ```
 
