@@ -28,6 +28,10 @@
 
 ​		<a href="#day-7-solution">Day 7 Solution</a>
 
+<a href="#day-8-seven-segment-search">Day 8</a>
+
+​		<a href="#day-8-solution">Day 8 Solution</a>
+
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -876,5 +880,238 @@ if __name__ == "__main__":
     crabs = input().split(",")
     crabs = [int(c) for c in crabs]
     print(best_position(crabs, adv=True))
+```
+
+## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 8: Seven Segment Search</span>
+
+#### --- Part 1 ---
+
+You barely reach the safety of the cave when the whale smashes into the cave mouth, collapsing it. Sensors indicate another exit to this cave at a much greater depth, so you have no choice but to press on.
+
+As your submarine slowly makes its way through the cave system, you notice that the four-digit [seven-segment displays](https://en.wikipedia.org/wiki/Seven-segment_display) in your submarine are malfunctioning; they must have been damaged during the escape. You'll be in a lot of trouble without them, so you'd better figure out what's wrong.
+
+Each digit of a seven-segment display is rendered by turning on or off any of seven segments named `a` through `g`:
+
+```
+  0:      1:      2:      3:      4:
+ aaaa    ....    aaaa    aaaa    ....
+b    c  .    c  .    c  .    c  b    c
+b    c  .    c  .    c  .    c  b    c
+ ....    ....    dddd    dddd    dddd
+e    f  .    f  e    .  .    f  .    f
+e    f  .    f  e    .  .    f  .    f
+ gggg    ....    gggg    gggg    ....
+
+  5:      6:      7:      8:      9:
+ aaaa    aaaa    aaaa    aaaa    aaaa
+b    .  b    .  .    c  b    c  b    c
+b    .  b    .  .    c  b    c  b    c
+ dddd    dddd    ....    dddd    dddd
+.    f  e    f  .    f  e    f  .    f
+.    f  e    f  .    f  e    f  .    f
+ gggg    gggg    ....    gggg    gggg
+```
+
+So, to render a `1`, only segments `c` and `f` would be turned on; the rest would be off. To render a `7`, only segments `a`, `c`, and `f` would be turned on.
+
+The problem is that the signals which control the segments have been mixed up on each display. The submarine is still trying to display numbers by producing output on signal wires `a` through `g`, but those wires are connected to segments **randomly**. Worse, the wire/segment connections are mixed up separately for each four-digit display! (All of the digits **within** a display use the same connections, though.)
+
+So, you might know that only signal wires `b` and `g` are turned on, but that doesn't mean **segments** `b` and `g` are turned on: the only digit that uses two segments is `1`, so it must mean segments `c` and `f` are meant to be on. With just that information, you still can't tell which wire (`b`/`g`) goes to which segment (`c`/`f`). For that, you'll need to collect more information.
+
+For each display, you watch the changing signals for a while, make a note of **all ten unique signal patterns** you see, and then write down a single **four digit output value** (your puzzle input). Using the signal patterns, you should be able to work out which pattern corresponds to which digit.
+
+For example, here is what you might see in a single entry in your notes:
+
+```
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
+```
+
+Each entry consists of ten **unique signal patterns**, a `|` delimiter, and finally the **four digit output value**. Within an entry, the same wire/segment connections are used (but you don't know what the connections actually are). The unique signal patterns correspond to the ten different ways the submarine tries to render a digit using the current wire/segment connections. Because `7` is the only digit that uses three segments, `dab` in the above example means that to render a `7`, signal lines `d`, `a`, and `b` are on. Because `4` is the only digit that uses four segments, `eafb` means that to render a `4`, signal lines `e`, `a`, `f`, and `b` are on.
+
+Using this information, you should be able to work out which combination of signal wires corresponds to each of the ten digits. Then, you can decode the four digit output value. Unfortunately, in the above example, all of the digits in the output value (`cdfeb fcadb cdfeb cdbaf`) use five segments and are more difficult to deduce.
+
+For now, **focus on the easy digits**. Consider this larger example:
+
+```
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
+```
+
+Because the digits `1`, `4`, `7`, and `8` each use a unique number of segments, you should be able to tell which combinations of signals correspond to those digits. Counting **only digits in the output values** (the part after `|` on each line), in the above example, there are **`26`** instances of digits that use a unique number of segments (highlighted above).
+
+**In the output values, how many times do digits `1`, `4`, `7`, or `8` appear?**
+
+#### --- Part 2 ---
+
+Through a little deduction, you should now be able to determine the remaining digits. Consider again the first example above:
+
+```
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
+cdfeb fcadb cdfeb cdbaf
+```
+
+After some careful analysis, the mapping between signal wires and segments only make sense in the following configuration:
+
+```
+ dddd
+e    a
+e    a
+ ffff
+g    b
+g    b
+ cccc
+```
+
+So, the unique signal patterns would correspond to the following digits:
+
+- `acedgfb`: `8`
+- `cdfbe`: `5`
+- `gcdfa`: `2`
+- `fbcad`: `3`
+- `dab`: `7`
+- `cefabd`: `9`
+- `cdfgeb`: `6`
+- `eafb`: `4`
+- `cagedb`: `0`
+- `ab`: `1`
+
+Then, the four digits of the output value can be decoded:
+
+- `cdfeb`: `5`
+- `fcadb`: `3`
+- `cdfeb`: `5`
+- `cdbaf`: `3`
+
+Therefore, the output value for this entry is **`5353`**.
+
+Following this same process for each entry in the second, larger example above, the output value of each entry can be determined:
+
+- `fdgacbe cefdb cefbgd gcbe`: `8394`
+- `fcgedb cgb dgebacf gc`: `9781`
+- `cg cg fdcagb cbg`: `1197`
+- `efabcd cedba gadfec cb`: `9361`
+- `gecf egdcabf bgf bfgea`: `4873`
+- `gebdcfa ecba ca fadegcb`: `8418`
+- `cefg dcbef fcge gbcadfe`: `4548`
+- `ed bcgafe cdgba cbgef`: `1625`
+- `gbdfcae bgc cg cgb`: `8717`
+- `fgae cfgab fg bagce`: `4315`
+
+Adding all of the output values in this larger example produces **`61229`**.
+
+For each entry, determine all of the wire/segment connections and decode the four-digit output values. **What do you get if you add up all of the output values?**
+
+### <span style="color: #e14e41; text-shadow: 0 0 2px #e14e41, 0 0 5px #e14e41; font-weight: normal;">Day 8 Solution</span>
+
+#### --- Part 1 ---
+
+```python
+def unique_segments(readings):
+    guide = set([2, 4, 3, 7])
+    c = 0
+    for r in readings:
+        for o in r[1]:
+            if len(o) in guide: c += 1
+    return c
+
+if __name__ == "__main__":
+    readings = []
+    while(True):
+        r = input()
+        if r == '': break
+        delim = r.split(" | ")
+        readings.append((delim[0].split(" "), delim[1].split(" ")))
+    print(unique_segments(readings))
+```
+
+#### --- Part 2 ---
+
+```python
+def letter_map(left):
+    let_map = {}
+        # Find N=2, for cf // _
+    for n in left:
+        if len(n) == 2: let_map['c'], let_map['f'] = n[0], n[1]
+    # Find N=3, for a (the other besides cf) // a
+    for n in left:
+        if len(n) == 3:
+            for c in n:
+                if c != let_map['c'] and c != let_map['f']:
+                    let_map['a'] = c
+    # Find N=4, for bd // a
+    for n in left:
+        if len(n) == 4:
+            flag = False
+            for c in n:
+                if c != let_map['c'] and c != let_map['f']:
+                    if not flag: let_map['b'] = c
+                    else: let_map['d'] = c
+                    flag = True
+    # Find N=6 w/o c, for f (assign c to other) // acf
+    for n in left:
+        if (len(n) == 6 and 
+            not (let_map['c'] in n and let_map['f'] in n)):
+            if let_map['c'] in n:
+                tmp = let_map['c']
+                let_map['c'], let_map['f'] = let_map['f'], tmp 
+    # Find N=6 w/ abcdf, for g (only missing letter) // acfg
+    seen = set([let_map[k] for k in let_map])
+    for n in left:
+        if (len(n) == 6 and seen <= set(n)):
+            for c in n:
+                if c not in seen: let_map['g'] = c
+    # Find N=5 w/ acfg, for d (assign b to other) // abcdfg
+    check = set([let_map['a'], let_map['c'], let_map['f'], let_map['g']])
+    for n in left:
+        if (len(n) == 5 and check <= set(n)):
+            for c in n:
+                if c not in check and c != let_map['d']:
+                    tmp = let_map['b']
+                    let_map['b'], let_map['d'] = let_map['d'], tmp
+    # Give e the remaining letter // abcdefg
+    seen = set([let_map[k] for k in let_map])
+    for c in "abcdefg":
+        if c not in seen:
+            let_map['e'] = c
+    return let_map
+
+def decode(input, let_map):
+    print(input)
+    num_map = {"abcefg": 0, "cf": 1, "acdeg": 2, "acdfg": 3, "bcdf": 4,
+        "abdfg": 5, "abdefg": 6, "acf": 7, "abcdefg": 8, "abcdfg": 9}
+    rev_map = {let_map[k]:k for k in let_map}
+    letters = []
+    for c in input:
+        letters.append(rev_map[c])
+    letters = sorted(letters)
+    return num_map[''.join(letters)]
+
+def sum_readings(readings):
+    c = 0
+    for r in readings:
+        left, right = r
+        let_map = letter_map(left)
+        num = 0
+        for n in right:
+            num = num*10 + decode(n, let_map)
+        c += num
+    return c
+
+if __name__ == "__main__":
+    readings = []
+    while(True):
+        r = input()
+        if r == '': break
+        delim = r.split(" | ")
+        readings.append((delim[0].split(" "), delim[1].split(" ")))
+    print(sum_readings(readings))
 ```
 
