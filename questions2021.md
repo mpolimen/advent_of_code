@@ -1,5 +1,7 @@
 # <span style="text-align: center; background: repeating-linear-gradient(45deg,#30a883,#30a883 30px,#ff0a0a 30px,#ff0a0a 60px); background-clip: text; color: transparent; -webkit-background-clip: text;">Advent of Code 2021</span>
 
+[<img src="https://cdn-icons-png.flaticon.com/512/889/889192.png" style="zoom: 10%;" />](https://github.com/mpolimen/advent_of_code/tree/main/days)
+
 <a href="#day-1-sonar-sweep">Day 1</a>	
 
 ​	<a href="#day-1-solution">Day 1 Solution</a>
