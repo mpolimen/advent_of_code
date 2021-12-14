@@ -32,6 +32,10 @@
 
 ​		<a href="#day-8-solution">Day 8 Solution</a>
 
+<a href="#day-9-smoke-basin">Day 9</a>
+
+​		<a href="#day-9-solution">Day 9 Solution</a>
+
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -1113,5 +1117,160 @@ if __name__ == "__main__":
         delim = r.split(" | ")
         readings.append((delim[0].split(" "), delim[1].split(" ")))
     print(sum_readings(readings))
+```
+
+## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 9: Smoke Basin</span>
+
+#### --- Part 1 ---
+
+These caves seem to be [lava tubes](https://en.wikipedia.org/wiki/Lava_tube). Parts are even still volcanically active; small hydrothermal vents release smoke into the caves that slowly settles like rain.
+
+If you can model how the smoke flows through the caves, you might be able to avoid it and be that much safer. The submarine generates a heightmap of the floor of the nearby caves for you (your puzzle input).
+
+Smoke flows to the lowest point of the area it's in. For example, consider the following heightmap:
+
+```
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+```
+
+Each number corresponds to the height of a particular location, where `9` is the highest and `0` is the lowest a location can be.
+
+Your first goal is to find the **low points** - the locations that are lower than any of its adjacent locations. Most locations have four adjacent locations (up, down, left, and right); locations on the edge or corner of the map have three or two adjacent locations, respectively. (Diagonal locations do not count as adjacent.)
+
+In the above example, there are **four** low points, all highlighted: two are in the first row (a `1` and a `0`), one is in the third row (a `5`), and one is in the bottom row (also a `5`). All other locations on the heightmap have some lower adjacent location, and so are not low points.
+
+The **risk level** of a low point is **1 plus its height**. In the above example, the risk levels of the low points are `2`, `1`, `6`, and `6`. The sum of the risk levels of all low points in the heightmap is therefore **`15`**.
+
+Find all of the low points on your heightmap. **What is the sum of the risk levels of all low points on your heightmap?**
+
+#### --- Part 2 ---
+
+Next, you need to find the largest basins so you know what areas are most important to avoid.
+
+A **basin** is all locations that eventually flow downward to a single low point. Therefore, every low point has a basin, although some basins are very small. Locations of height `9` do not count as being in any basin, and all other locations will always be part of exactly one basin.
+
+The **size** of a basin is the number of locations within the basin, including the low point. The example above has four basins.
+
+The top-left basin, size `3`:
+
+```
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+```
+
+The top-right basin, size `9`:
+
+```
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+```
+
+The middle basin, size `14`:
+
+```
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+```
+
+The bottom-right basin, size `9`:
+
+```
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+```
+
+Find the three largest basins and multiply their sizes together. In the above example, this is `9 * 14 * 9 = 1134`.
+
+**What do you get if you multiply together the sizes of the three largest basins?**
+
+### <span style="color: #e14e41; text-shadow: 0 0 2px #e14e41, 0 0 5px #e14e41; font-weight: normal;">Day 9 Solution</span>
+
+#### --- Part 1 ---
+
+```python
+def is_low_point(h_map, pos, lens):
+    r, c = pos
+    n, m = lens
+    val = h_map[r][c]
+    return ((r < 1 or h_map[r-1][c] > val) and (c < 1 or h_map[r][c-1] > val)
+     and (r > n-2 or h_map[r+1][c] > val) and (c > m-2 or h_map[r][c+1] > val))
+
+def risk_levels(h_map):
+    l_points = set()
+    n, m = len(h_map), len(h_map[0])
+    for r in range(n):
+        for c in range(m):
+            if is_low_point(h_map, (r, c), (n, m)): l_points.add((r, c))
+    return sum([h_map[r][c]+1 for r,c in l_points])
+
+if __name__ == "__main__":
+    h_map = []
+    while(True):
+        r = input()
+        if r == '': break
+        h_map.append([int(p) for p in list(r)])
+    print(risk_levels(h_map))
+```
+
+#### --- Part 2 ---
+
+```python
+def largest_basins(h_map):
+    size, stack, basins = 0, [], []
+    n, m = len(h_map), len(h_map[0])
+    for r in range(n):
+        for c in range(m):
+            if h_map[r][c] == 9: continue
+            stack.append((r, c))
+            size = 1
+            h_map[r][c] = 9
+            while(len(stack) != 0):
+                r1, c1 = stack.pop()
+                if r1 > 0 and h_map[r1-1][c1] != 9:
+                    size += 1
+                    stack.append((r1-1, c1))
+                    h_map[r1-1][c1] = 9
+                if c1 > 0 and h_map[r1][c1-1] != 9:
+                    size += 1
+                    stack.append((r1, c1-1))
+                    h_map[r1][c1-1] = 9
+                if r1 < (n-1) and h_map[r1+1][c1] != 9:
+                    size += 1
+                    stack.append((r1+1, c1))
+                    h_map[r1+1][c1] = 9
+                if c1 < (m-1) and h_map[r1][c1+1] != 9:
+                    size += 1
+                    stack.append((r1, c1+1))
+                    h_map[r1][c1+1] = 9
+            basins.append(size)
+            size = 0
+    prod = 1
+    print(basins)
+    for n in sorted(basins, reverse=True)[:3]: prod *= n
+    return prod 
+
+if __name__ == "__main__":
+    h_map = []
+    while(True):
+        r = input()
+        if r == '': break
+        h_map.append([int(p) for p in list(r)])
+    print(largest_basins(h_map))
 ```
 
