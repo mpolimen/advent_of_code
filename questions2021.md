@@ -50,6 +50,10 @@
 
 ​		<a href="#day-12-solution">Day 12 Solution</a>
 
+<a href="#day-13-transparent-origami">Day 13</a>
+
+​		<a href="#day-13-solution">Day 13 Solution</a>
+
 ## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 1: Sonar Sweep</span>
 
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -2095,5 +2099,202 @@ if __name__ == "__main__":
     print(len(all_paths(edge_map, adv=True)))
 ```
 
+## <span style="color: #00cc00; text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00; font-weight: normal;">Day 13: Transparent Origami</span>
 
+#### --- Part 1 ---
+
+You reach another volcanically active part of the cave. It would be nice if you could do some kind of thermal imaging so you could tell ahead of time which caves are too hot to safely enter.
+
+Fortunately, the submarine seems to be equipped with a thermal camera! When you activate it, you are greeted with:
+
+```
+Congratulations on your purchase! To activate this infrared thermal imaging
+camera system, please enter the code found on page 1 of the manual.
+```
+
+Apparently, the Elves have never used this feature. To your surprise, you manage to find the manual; as you go to open it, page 1 falls out. It's a large sheet of [transparent paper](https://en.wikipedia.org/wiki/Transparency_(projection))! The transparent paper is marked with random dots and includes instructions on how to fold it up (your puzzle input). For example:
+
+```
+6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5
+```
+
+The first section is a list of dots on the transparent paper. `0,0` represents the top-left coordinate. The first value, `x`, increases to the right. The second value, `y`, increases downward. So, the coordinate `3,0` is to the right of `0,0`, and the coordinate `0,7` is below `0,0`. The coordinates in this example form the following pattern, where `#` is a dot on the paper and `.` is an empty, unmarked position:
+
+```
+...#..#..#.
+....#......
+...........
+#..........
+...#....#.#
+...........
+...........
+...........
+...........
+...........
+.#....#.##.
+....#......
+......#...#
+#..........
+#.#........
+```
+
+Then, there is a list of **fold instructions**. Each instruction indicates a line on the transparent paper and wants you to fold the paper **up** (for horizontal `y=...` lines) or **left** (for vertical `x=...` lines). In this example, the first fold instruction is `fold along y=7`, which designates the line formed by all of the positions where `y` is `7` (marked here with `-`):
+
+```
+...#..#..#.
+....#......
+...........
+#..........
+...#....#.#
+...........
+...........
+-----------
+...........
+...........
+.#....#.##.
+....#......
+......#...#
+#..........
+#.#........
+```
+
+Because this is a horizontal line, fold the bottom half **up**. Some of the dots might end up overlapping after the fold is complete, but dots will never appear exactly on a fold line. The result of doing this fold looks like this:
+
+```
+#.##..#..#.
+#...#......
+......#...#
+#...#......
+.#.#..#.###
+...........
+...........
+```
+
+Now, only `17` dots are visible.
+
+Notice, for example, the two dots in the bottom left corner before the transparent paper is folded; after the fold is complete, those dots appear in the top left corner (at `0,0` and `0,1`). Because the paper is transparent, the dot just below them in the result (at `0,3`) remains visible, as it can be seen through the transparent paper.
+
+Also notice that some dots can end up **overlapping**; in this case, the dots merge together and become a single dot.
+
+The second fold instruction is `fold along x=5`, which indicates this line:
+
+```
+#.##.|#..#.
+#...#|.....
+.....|#...#
+#...#|.....
+.#.#.|#.###
+.....|.....
+.....|.....
+```
+
+Because this is a vertical line, fold **left**:
+
+```
+#####
+#...#
+#...#
+#...#
+#####
+.....
+.....
+```
+
+The instructions made a square!
+
+The transparent paper is pretty big, so for now, focus on just completing the first fold. After the first fold in the example above, **`17`** dots are visible - dots that end up overlapping after the fold is completed count as a single dot.
+
+**How many dots are visible after completing just the first fold instruction on your transparent paper?**
+
+#### --- Part 2 ---
+
+Finish folding the transparent paper according to the instructions. The manual says the code is always **eight capital letters**.
+
+**What code do you use to activate the infrared thermal imaging camera system?**
+
+### <span style="color: #e14e41; text-shadow: 0 0 2px #e14e41, 0 0 5px #e14e41; font-weight: normal;">Day 13 Solution</span>
+
+```python
+def print_paper(paper):
+    for line in paper:
+        print("".join(["." if not x else "#" for x in line]))
+
+def fold(paper, instr):
+    axis, pos = instr
+    n, m, dist = len(paper), len(paper[0]), 1
+    folded = []
+    if axis == "y":
+        while pos+dist < n and pos-dist >= 0:
+            folded.insert(0, [])
+            for i in range(m):
+                folded[0].append(paper[pos+dist][i] or paper[pos-dist][i])
+            dist += 1
+        if pos-dist >= 0:
+            for r in range(pos-dist, -1, -1):
+                folded.insert(0, paper[r])
+        if pos+dist < n:
+            for r in range(pos+dist, n):
+                folded.append(paper[r])
+    else:
+        folded = [[] for _ in range(n)]
+        while pos+dist < m and pos-dist >= 0:
+            for i in range(n):
+                folded[i].insert(0, paper[i][pos+dist] or paper[i][pos-dist])
+            dist += 1
+        if pos-dist >= 0:
+            for i in range(n):
+                tmp = [e for e in paper[i][:pos-dist+1]]
+                tmp.extend(folded[i])
+                folded[i] = tmp
+        if pos+dist < m:
+            for i in range(n):
+                folded[i].extend([e for e in paper[i][pos+dist:]])
+    return folded
+
+def draw_dots(dots):
+    x_max, y_max = 0, 0
+    for dot in dots: x_max, y_max = max(dot[0], x_max), max(dot[1], y_max)
+    paper = [[False for _ in range(x_max+1)] for _ in range(y_max+1)]
+    for dot in dots: paper[dot[1]][dot[0]] = True
+    return paper
+
+if __name__ == "__main__":
+    dots = []
+    folds = []
+    while True:
+        i = input()
+        if i == 'end': break
+        if i == "": continue
+        if "fold along" in i:
+            folds.append(i[11:].split("="))
+            folds[-1][1] = int(folds[-1][1])
+        else:
+            dots.append([int(p) for p in i.split(",")])
+    paper = draw_dots(dots)
+    folded = fold(paper, folds[0])
+    print("Part 1:", sum(r.count(True) for r in folded))
+    for instr in folds[1:]: folded = fold(folded, instr)
+    print("Part 2:")
+    print_paper(folded)
+```
 
