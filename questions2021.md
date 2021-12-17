@@ -1334,16 +1334,6 @@ For example, consider the following navigation subsystem:
 <{([{{}}[<[[[<>{}]]]>[]]
 ```
 
-Some of the lines aren't corrupted, just incomplete; you can ignore these lines for now. The remaining five lines are corrupted:
-
-```
-- `{([(<{}[<>[]}>{[]{[(<()>` - Expected `]`, but found `}` instead.
-- `[[<[([]))<([[{}[[()]]]` - Expected `]`, but found `)` instead.
-- `[{[{({}]{}}([{[{{{}}([]` - Expected `)`, but found `]` instead.
-- `[<(<(<(<{}))><([]([]()` - Expected `>`, but found `)` instead.
-- `<{([([[(<>()){}]>(<<{{` - Expected `]`, but found `>` instead.
-```
-
 Stop at the first incorrect closing character on each corrupted line.
 
 Did you know that syntax checkers actually have contests to see who can get the high score for syntax errors in a file? It's true! To calculate the syntax error score for a line, take the **first illegal character** on the line and look it up in the following table:
